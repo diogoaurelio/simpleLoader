@@ -1,5 +1,11 @@
 package com.berlinsmartdata.simpleLoader.basicExamples
 
+import com.berlinsmartdata.simpleLoader.rest.AkkaHttpApi
+import com.berlinsmartdata.simpleLoader.utils.JobConfiguration
+import com.typesafe.config.ConfigFactory
+
+import scala.concurrent.duration._
+import scala.io.StdIn
 import scalaj.http._
 
 /*
@@ -9,18 +15,28 @@ import scalaj.http._
 object blockingHttpScalaj extends App {
 
 
-  def getWeatherForState(cityCode:String, state:String): HttpResponse[String] = {
-    // Check these instructions on how to query the wunderground api: https://github.com/InitialState/wunderground-sensehat/wiki/Part-1.-How-to-Use-the-Wunderground-API
-    val wUrl = s"http://api.wunderground.com/api/5a7c66db0ba0323a/conditions/q/$cityCode/$state.json"
+  def getRequest(host:String, port:Int): HttpResponse[String] = {
+    val wUrl = s"http://${host}:${port}/"
+    println(s"Querying ${wUrl}")
     Http(wUrl).asString
   }
+  val conf = JobConfiguration.getConfiguration()
+  val host = conf.getString("akka-http.host")
+  val port = conf.getInt("akka-http.port")
 
-  val response: HttpResponse[String] = getWeatherForState("CA", "San_Francisco")
+  def response = {
+    val response = getRequest(host, port)
+    println(response.body)
+    println(response.code)
+    println(response.headers)
+    println(response.cookies)
+  }
+  // start the server
+  val api = AkkaHttpApi
 
-  println(response.body)
-  println(response.code)
-  println(response.headers)
-  println(response.cookies)
-
+  println(s"Starting App - Server online at http://${host}:${port}/")
+  response
+  println(s"Press RETURN to stop...")
+  StdIn.readLine() // let it run until user presses return
 
 }
