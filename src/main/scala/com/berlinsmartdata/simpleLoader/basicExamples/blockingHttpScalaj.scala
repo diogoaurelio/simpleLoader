@@ -1,10 +1,8 @@
 package com.berlinsmartdata.simpleLoader.basicExamples
 
 import com.berlinsmartdata.simpleLoader.rest.AkkaHttpApi
-import com.berlinsmartdata.simpleLoader.utils.JobConfiguration
-import com.typesafe.config.ConfigFactory
+import com.berlinsmartdata.simpleLoader.utils.{JobConfiguration, Utils}
 
-import scala.concurrent.duration._
 import scala.io.StdIn
 import scalaj.http._
 
@@ -15,28 +13,33 @@ import scalaj.http._
 object blockingHttpScalaj extends App {
 
 
-  def getRequest(host:String, port:Int): HttpResponse[String] = {
-    val wUrl = s"http://${host}:${port}/"
-    println(s"Querying ${wUrl}")
-    Http(wUrl).asString
+  def getRequest(address:String, timeOut:Int = 10000): HttpResponse[String] = {
+    val wUrl = s"http://${address}/"
+    println(s"Hitting URL ${wUrl}")
+    Http(wUrl).timeout(connTimeoutMs = timeOut, readTimeoutMs = timeOut).asString
   }
+
+  def response(implicit address:String) = {
+    val response = getRequest(address)
+    println(s"Status code: ${response.code}")
+    println(response.body)
+    //println(response.headers)
+  }
+
   val conf = JobConfiguration.getConfiguration()
   val host = conf.getString("akka-http.host")
   val port = conf.getInt("akka-http.port")
-
-  def response = {
-    val response = getRequest(host, port)
-    println(response.body)
-    println(response.code)
-    println(response.headers)
-    println(response.cookies)
-  }
+  implicit val address = s"${host}:${port}"
   // start the server
   val api = AkkaHttpApi
 
-  println(s"Starting App - Server online at http://${host}:${port}/")
-  response
-  println(s"Press RETURN to stop...")
+  println(s"Starting App - Akka-HTTP API daemon live at http://${address}/")
+  // 3x GET request
+  Utils.measureDuration({response; response; response})
+
+  println("Press RETURN to stop Akka-HTTP daemon...")
   StdIn.readLine() // let it run until user presses return
+  println("Bye!")
+  System.exit(0)
 
 }
