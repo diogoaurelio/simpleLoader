@@ -4,27 +4,13 @@ import com.berlinsmartdata.simpleLoader.rest.AkkaHttpApi
 import com.berlinsmartdata.simpleLoader.utils.{JobConfiguration, Utils}
 
 import scala.io.StdIn
-import scalaj.http._
+
 
 /*
- * Shows a blocking example of a HTTP request
+ * Shows an example of HTTP requests in a blocking fashion
  */
 
-object blockingHttpScalaj extends App {
-
-
-  def getRequest(address:String, timeOut:Int = 10000): HttpResponse[String] = {
-    val wUrl = s"http://${address}/"
-    println(s"Hitting URL ${wUrl}")
-    Http(wUrl).timeout(connTimeoutMs = timeOut, readTimeoutMs = timeOut).asString
-  }
-
-  def response(implicit address:String) = {
-    val response = getRequest(address)
-    println(s"Status code: ${response.code}")
-    println(response.body)
-    //println(response.headers)
-  }
+object BlockingHttpScalaj extends App with HttpRequester {
 
   val conf = JobConfiguration.getConfiguration()
   val host = conf.getString("akka-http.host")

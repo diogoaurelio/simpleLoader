@@ -17,7 +17,7 @@ import scala.concurrent.duration._
   * Example using Play WS API
   */
 
-object scalaPlayWSHttpRequest extends App {
+object ScalaPlayWSHttpRequest extends App {
 
   def getWeatherForState(wUrl:String, ws: NingWSClient): Future[WSResponse] = {
 
