@@ -41,7 +41,7 @@ trait AkkaApiService extends jsonSerializer {
     }
 
   def pseudoNetworkOperation(latency:Int=3000):String = {
-    logger.info(s"Emulating network latency (${latency} s) in a HTTP request")
+    logger.info(s"Emulating network latency (${latency} ms) in a HTTP request")
     Thread.sleep(latency)
     "Finally done!"
   }
@@ -49,7 +49,7 @@ trait AkkaApiService extends jsonSerializer {
 
 object AkkaHttpApi extends AkkaApiService {
   override implicit val system = ActorSystem()
-  override implicit val executor = system.dispatcher
+  override implicit val executor = system.dispatchers.lookup("my-dispatcher")
   override implicit val materializer = ActorMaterializer()
 
   override val conf = ConfigFactory.load()
@@ -64,6 +64,7 @@ object AkkaHttpApi extends AkkaApiService {
     logger.info(s"Server online at ${binding.localAddress}")
   } recover { case ex =>
     logger.info(s"It seems that API daemon cannot bind to $host:$port", ex.getMessage)
+    System.exit(1)
   }
 
 }

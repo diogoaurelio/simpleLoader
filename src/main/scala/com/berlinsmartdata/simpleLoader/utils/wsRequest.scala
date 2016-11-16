@@ -1,9 +1,7 @@
 package com.berlinsmartdata.simpleLoader.utils
 
 
-import akka.actor.ActorSystem
 import com.ning.http.client.{AsyncHttpClientConfigBean, AsyncHttpClientConfig}
-import org.jboss.netty.handler.ssl.util.InsecureTrustManagerFactory
 import play.api.libs.ws.ning.NingWSClient
 import play.api.libs.ws.ning.NingAsyncHttpClientConfigBuilder
 import play.api.libs.ws.ssl.{SSLLooseConfig, SSLConfig}
@@ -12,7 +10,6 @@ import scala.concurrent.Future
 import play.api.libs.json._
 // provide an execution context
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 
 object wsRequest {
 
@@ -73,14 +70,6 @@ object wsRequest {
       val config = new NingAsyncHttpClientConfigBuilder(DefaultWSClientConfig(acceptAnyCertificate=Option(true))).build
       val builder = new AsyncHttpClientConfig.Builder(config)
       val client = new NingWSClient(builder.build)
-
-      /*
-      val sslLooseConfig = new SSLLooseConfig(acceptAnyCertificate = true)
-      val sslConfig = new SSLConfig(loose = sslLooseConfig)
-      val config = new WSClientConfig(ssl = sslConfig)
-      val builder = new NingAsyncHttpClientConfigBuilder(config)
-      val ws = new NingWSClient(builder.build())
-      */
 
       val asyncs: Seq[Future[String]] = (0 to numRequests).map(
         x => myJob(wUrl, client, headers, queryStrings,
