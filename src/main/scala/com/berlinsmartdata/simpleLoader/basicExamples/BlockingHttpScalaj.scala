@@ -1,7 +1,7 @@
 package com.berlinsmartdata.simpleLoader.basicExamples
 
 import com.berlinsmartdata.simpleLoader.rest.AkkaHttpApi
-import com.berlinsmartdata.simpleLoader.utils.{HttpRequester, JobConfiguration, Utils}
+import com.berlinsmartdata.simpleLoader.utils.{ScalaJHttpRequester, JobConfiguration, Utils}
 
 import scala.io.StdIn
 
@@ -10,7 +10,7 @@ import scala.io.StdIn
  * Shows an example of HTTP requests in a blocking fashion
  */
 
-object BlockingHttpScalaj extends App with HttpRequester {
+object BlockingHttpScalaj extends App with ScalaJHttpRequester {
 
   val conf = JobConfiguration.getConfiguration()
   val host = conf.getString("akka-http.host")

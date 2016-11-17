@@ -1,7 +1,7 @@
 package com.berlinsmartdata.simpleLoader.basicExamples
 
 import com.berlinsmartdata.simpleLoader.rest.AkkaHttpApi
-import com.berlinsmartdata.simpleLoader.utils.{HttpRequester, JobConfiguration, Utils}
+import com.berlinsmartdata.simpleLoader.utils.{ScalaJHttpRequester, JobConfiguration, Utils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -15,7 +15,7 @@ import scala.io.StdIn
  */
 
 
-object ConcurrentHttpScalaj03 extends App with HttpRequester {
+object ConcurrentHttpScalaj03 extends App with ScalaJHttpRequester {
 
   val conf = JobConfiguration.getConfiguration()
   val host = conf.getString("akka-http.host")

@@ -1,32 +1,28 @@
 package com.berlinsmartdata.simpleLoader.basicExamples
 
 import java.util.concurrent.Executors
-
 import com.berlinsmartdata.simpleLoader.rest.AkkaHttpApi
-import com.berlinsmartdata.simpleLoader.utils.{ScalaJHttpRequester, JobConfiguration, Utils}
+import com.berlinsmartdata.simpleLoader.utils.{PlayWsRequester, Utils, JobConfiguration}
+
+import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.{Future, Await}
 import scala.io.StdIn
 
-/*
- * Shows how to generate X amount of
- * parallel non-blocking requests
- *
- */
-
-
-object ConcurrentHttpScalaj04 extends App with ScalaJHttpRequester {
+/**
+  * Created by diogo on 17.11.16.
+  */
+object ConcurrentPlayWs extends App with PlayWsRequester {
 
   val conf = JobConfiguration.getConfiguration()
   val host = conf.getString("akka-http.host")
   val port = conf.getInt("akka-http.port")
-  implicit val address = s"${host}:${port}"
+  implicit val address = s"http://${host}:${port}"
   // start the server
   val api = AkkaHttpApi
 
-  println(s"Starting App - Akka-HTTP API daemon live at http://${address}/")
+  println(s"Starting App - Akka-HTTP API daemon live at ${address}/")
 
-  val numRequests = 10
+  val numRequests = 100
   // Uncomment next line to use default thread-pool environment
   //implicit val ec =  scala.concurrent.ExecutionContext.Implicits.global
 
@@ -45,7 +41,8 @@ object ConcurrentHttpScalaj04 extends App with ScalaJHttpRequester {
   )
 
   Utils.measureDuration {
-    val blockOfCode = dynamicRequests(address, headers=Some(headersMap), numRequests=numRequests)
+    val blockOfCode = controller(wUrl=address, numRequests=numRequests,
+      headers=Some(headersMap), queryStrings=None, postData=None)
     Await.result(blockOfCode, 60 seconds)
   }
   println("Press RETURN to stop Akka-HTTP daemon...")

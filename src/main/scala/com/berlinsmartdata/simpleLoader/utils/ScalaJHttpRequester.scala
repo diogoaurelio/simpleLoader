@@ -7,7 +7,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * Trait for generic scalaj HTTP requests
   *
   */
-trait HttpRequester {
+trait ScalaJHttpRequester {
 
   def getRequest(address:String,
                  timeOut:Int = 10000,

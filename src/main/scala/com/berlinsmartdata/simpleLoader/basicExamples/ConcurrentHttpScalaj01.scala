@@ -1,20 +1,23 @@
 package com.berlinsmartdata.simpleLoader.basicExamples
 
 import com.berlinsmartdata.simpleLoader.rest.AkkaHttpApi
-import com.berlinsmartdata.simpleLoader.utils.{HttpRequester, JobConfiguration, Utils}
+import com.berlinsmartdata.simpleLoader.utils.{ScalaJHttpRequester, JobConfiguration, Utils}
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 import scala.io.StdIn
 import ExecutionContext.Implicits.global
 
 /*
- * Shows a non-blocking version of the previous
+ * Shows a near non-blocking version of the previous
  * example of a HTTP request with for-comprehension
+ * Why near non-blocking? Well for every client connection, you get a thread
+ * blocked inside the implicit ExecutionContext, since scalaj.http lib blocks threads;
+ * this potentially means you can exaust the thread pool => so looks more like traditional threading
  *
  */
 
 
-object ConcurrentHttpScalaj01 extends App with HttpRequester {
+object ConcurrentHttpScalaj01 extends App with ScalaJHttpRequester {
 
   val conf = JobConfiguration.getConfiguration()
   val host = conf.getString("akka-http.host")
